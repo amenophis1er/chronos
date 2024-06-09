@@ -1,14 +1,15 @@
 <?php
 
-namespace Amenophis\Chronos;
+namespace Amenophis\Chronos\commands;
 
+use Amenophis\Chronos\BaseCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GitCommand extends Command
+class GitCommand extends BaseCommand
 {
     protected static $defaultName = 'git:tag-push';
 

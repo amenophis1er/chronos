@@ -1,26 +1,27 @@
 <?php
 
-namespace Amenophis\Chronos;
+namespace Amenophis\Chronos\commands;
 
+use Amenophis\Chronos\BaseCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Dotenv\Dotenv;
 
-class GptDumpCommand extends Command
+class GptDumpCommand extends BaseCommand
 {
     protected static $defaultName = 'gpt:dump';
     private $filesystem;
-    private $debug = false;
 
     public function __construct()
     {
+        // Call the parent constructor to initialize BaseCommand
         parent::__construct();
         $this->filesystem = new Filesystem();
-        $this->loadEnv();
+//        $this->loadEnv();
     }
 
     protected function configure()
@@ -55,7 +56,7 @@ class GptDumpCommand extends Command
 
         $excludePatterns = array_merge($defaultExclusions, $userExclusions, $gitignoreExclusions);
 
-        $this->debugLog($output, "Exclusion patterns: " . json_encode($excludePatterns));
+        $this->logger->debug("Exclusion patterns: " . json_encode($excludePatterns));
 
         $output->writeln([
             '<fg=green>Generating dump for ' . $directoryName . ' as ' . $outputFileName . '</>',
@@ -136,7 +137,7 @@ class GptDumpCommand extends Command
         foreach ($finder->files() as $file) {
             $relativePath = str_replace($path . '/', '', $file->getRealPath());
             if ($this->isExcluded($relativePath, $excludePatterns)) {
-                $this->debugLog($output, "Explicitly excluded file: " . $relativePath);
+                $this->logger->debug("Explicitly excluded file: " . $relativePath);
                 continue;
             }
             if ($this->isPlainTextFile($file->getRealPath())) {
@@ -145,7 +146,7 @@ class GptDumpCommand extends Command
                 $markdown .= $file->getContents();
                 $markdown .= "\n```\n\n";
             } else {
-                $this->debugLog($output, "Skipped non-text file: " . $relativePath);
+                $this->logger->debug("Skipped non-text file: " . $relativePath);
             }
         }
 
@@ -170,7 +171,7 @@ class GptDumpCommand extends Command
         foreach ($finder as $item) {
             $relativePath = str_replace($path . '/', '', $item->getRealPath());
             if ($this->isExcluded($relativePath, $excludePatterns)) {
-                $this->debugLog($output, "Explicitly excluded path: " . $relativePath);
+                $this->logger->debug("Explicitly excluded path: " . $relativePath);
                 continue;
             }
             $tree .= $prefix . $item->getFilename() . "\n";
@@ -216,10 +217,10 @@ class GptDumpCommand extends Command
         }
     }
 
-    private function debugLog(OutputInterface $output, string $message): void
-    {
-        if ($this->debug) {
-            $output->writeln('<fg=yellow>[DEBUG]</> ' . $message);
-        }
-    }
+//    private function debugLog(OutputInterface $output, string $message): void
+//    {
+//        if ($this->debug) {
+//            $output->writeln('<fg=yellow>[DEBUG]</> ' . $message);
+//        }
+//    }
 }

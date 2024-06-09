@@ -1,17 +1,16 @@
 <?php
 
-namespace Amenophis\Chronos;
+namespace Amenophis\Chronos\commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Exception\RuntimeException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-use Symfony\Component\Validator\Validation;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Validator\Constraints\Json as JsonConstraint;
+use Symfony\Component\Validator\Validation;
 
-class GptCommand extends Command
+class GptUpdateCodeCommand extends Command
 {
     protected static $defaultName = 'gpt:update-code';
     private $filesystem;
