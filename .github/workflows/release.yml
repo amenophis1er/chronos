@@ -75,4 +75,4 @@ jobs:
       - name: Upload Release Asset
         if: env.release_exists == 'false'
         run: |
-          gh release upload ${{ github.ref_name }} ./chronos.phar
+          gh release upload ${{ github.ref_name }} dist/chronos.phar --clobber
