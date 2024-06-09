@@ -1,0 +1,5 @@
+/vendor/
+/chronos.md
+/.idea
+/.env
+/dist/chronos.phar
