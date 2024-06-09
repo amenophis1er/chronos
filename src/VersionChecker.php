@@ -2,10 +2,7 @@
 
 namespace Amenophis\Chronos;
 
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 
 class VersionChecker
 {
@@ -38,7 +35,6 @@ class VersionChecker
             $output->writeln("<info>Done.</info>");
         }
 
-        // Normalize the versions by removing the "v" prefix if present
         $normalizedLatestVersion = ltrim($latestVersion, 'v');
         $normalizedCurrentVersion = ltrim($this->currentVersion, 'v');
 
@@ -71,15 +67,15 @@ class VersionChecker
 
     private function fetchLatestVersion(OutputInterface $output)
     {
-        $url = "https://api.github.com/repos/amenophis1er/chronos/releases/latest";
+        $apiUrl = $this->inferApiUrl($this->repoUrl);
+
         $context = stream_context_create([
             "http" => [
                 "header" => "User-Agent: PHP\r\n"
             ]
         ]);
 
-        $response = @file_get_contents($url, false, $context);
-
+        $response = @file_get_contents($apiUrl, false, $context);
 
         if ($response === false) {
             $output->writeln("<error>Failed to fetch the latest version. Error: " . error_get_last()['message'] . "</error>");
@@ -94,5 +90,24 @@ class VersionChecker
         }
 
         return $release['tag_name'];
+    }
+
+    private function inferApiUrl($repoUrl)
+    {
+        // Parse the repo URL to get the parts needed
+        $parsedUrl = parse_url($repoUrl);
+        if (!isset($parsedUrl['host']) || !isset($parsedUrl['path'])) {
+            throw new \InvalidArgumentException("Invalid repository URL: $repoUrl");
+        }
+
+        $pathParts = explode('/', trim($parsedUrl['path'], '/'));
+        if (count($pathParts) < 2) {
+            throw new \InvalidArgumentException("Invalid repository URL: $repoUrl");
+        }
+
+        $owner = $pathParts[0];
+        $repo = $pathParts[1];
+
+        return "https://api.github.com/repos/$owner/$repo/releases/latest";
     }
 }

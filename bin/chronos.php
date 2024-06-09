@@ -9,47 +9,81 @@ use Amenophis\Chronos\VersionChecker;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-$autoloadFile = __DIR__ . '/../vendor/autoload.php';
+// Constants for configuration
+define('REQUIRED_PHP_VERSION', '8.0.2');
+define('AUTOLOAD_FILE', __DIR__ . '/../vendor/autoload.php');
+define('VERSION_FILE_PATH', __DIR__ . '/../VERSION');
 
-if (!file_exists($autoloadFile)) {
-    $output = new ConsoleOutput();
-    $output->writeln('<error>Error: Autoload file not found. Please run "composer install" first.</error>');
-    exit(1);
-}
+
+// Check prerequisites before running the application
+checkPhpVersion();
+checkAutoloadFile();
 
 // Autoload dependencies
-require $autoloadFile;
-
-// PHP version check
-if (version_compare(PHP_VERSION, '7.4.0', '<')) {
-    $output = new ConsoleOutput();
-    $output->writeln('<error>Error: This application requires PHP 7.4 or higher.</error>');
-    exit(1);
-}
-
-$versionFilePath = __DIR__ . '/../VERSION';// Read the version from the VERSION file
-$currentVersion = file_exists($versionFilePath) ? trim(file_get_contents($versionFilePath)) : 'unknown';
+require AUTOLOAD_FILE;
 
 // Create the application
-$application = new Application("Chronos", $currentVersion);
-
+$application = new Application("Chronos", getCurrentVersion());
 $output = new ConsoleOutput();
 
-# Perform version check
-$versionChecker = new VersionChecker("$currentVersion", "https://github.com/amenophis1er/chronos");
+// Perform version check
+$versionChecker = new VersionChecker(getCurrentVersion(), "https://github.com/amenophis1er/chronos");
 $versionChecker->checkForUpdates($output);
 
-
 try {
-    // Add commands
-    $application->add(new GptUpdateCodeCommand());
-    $application->add(new GptDumpCommand());
-    $application->add(new GitCommand());
+    // Register commands
+    registerCommands($application);
 
     // Run the application
     $application->run();
 } catch (Exception $e) {
-    $output = new ConsoleOutput();
-    $output->writeln('<error>An unexpected error occurred: ' . $e->getMessage() . '</error>');
+    fwrite(STDERR, "An unexpected error occurred: " . $e->getMessage() . "\n");
     exit(1);
+}
+
+/**
+ * Check if the current PHP version meets the requirement.
+ */
+function checkPhpVersion()
+{
+    if (version_compare(PHP_VERSION, REQUIRED_PHP_VERSION, '<')) {
+        fwrite(STDERR, "Error: This application requires PHP " . REQUIRED_PHP_VERSION . " or higher. Your PHP version is " . PHP_VERSION . ".\n");
+        exit(1);
+    }
+}
+
+/**
+ * Check if the autoload file exists.
+ */
+function checkAutoloadFile()
+{
+    if (!file_exists(AUTOLOAD_FILE)) {
+        fwrite(STDERR, "Error: Autoload file not found. Please run \"composer install\" first.\n");
+        exit(1);
+    }
+}
+
+/**
+ * Get the current version of the application from the VERSION file.
+ *
+ * @return string The current version or 'unknown' if the file does not exist.
+ */
+function getCurrentVersion()
+{
+    if (file_exists(VERSION_FILE_PATH)) {
+        return trim(file_get_contents(VERSION_FILE_PATH));
+    }
+    return 'unknown';
+}
+
+/**
+ * Register application commands.
+ *
+ * @param Application $application The Symfony Console application instance.
+ */
+function registerCommands(Application $application)
+{
+    $application->add(new GptUpdateCodeCommand());
+    $application->add(new GptDumpCommand());
+    $application->add(new GitCommand());
 }
