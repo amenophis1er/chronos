@@ -31,6 +31,7 @@ try {
     // Add commands
     $application->add(new \Amenophis\Chronos\GptCommand());
     $application->add(new \Amenophis\Chronos\GptDumpCommand());
+    $application->add(new \Amenophis\Chronos\GitCommand());
 
     // Run the application
     $application->run();
