@@ -24,13 +24,20 @@ class GitCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $version = escapeshellarg($input->getArgument('version'));
-        $message = escapeshellarg($input->getArgument('message') . ' ' . $version);
+        $version = $input->getArgument('version');
+        $message = $input->getArgument('message') . ' ' . $version;
         $force = $input->getOption('force') ? '--force' : '';
 
+        // Check if tag already exists
+        exec("git tag -l '$version'", $existingTags);
+        if (!empty($existingTags) && !$force) {
+            $output->writeln("<error>Tag '$version' already exists. Use --force to overwrite.</error>");
+            return Command::FAILURE;
+        }
+
         $commands = [
-            "git tag -a $version -m $message",
-            "git push origin $force $version"
+            "git tag -a '$version' -m '$message'",
+            "git push origin $force '$version'"
         ];
 
         foreach ($commands as $command) {
@@ -44,7 +51,7 @@ class GitCommand extends Command
             $output->writeln(implode("\n", $cmdOutput));
         }
 
-        $output->writeln("<info>Tag $version created and pushed successfully.</info>");
+        $output->writeln("<info>Tag '$version' created and pushed successfully.</info>");
         return Command::SUCCESS;
     }
 }
