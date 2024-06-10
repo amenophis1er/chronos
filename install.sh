@@ -1,11 +1,18 @@
 #!/bin/sh
 set -e
 
-REPO="amenophis/chronos"
+REPO="amenophis1er/chronos"
 PHAR_NAME="chronos.phar"
 CHECKSUM_FILE="SHA256SUMS"
-INSTALL_DIR="/usr/local/bin"
-INSTALL_PATH="$INSTALL_DIR/chronos"
+SYSTEM_INSTALL_DIR="/usr/local/bin"
+LOCAL_INSTALL_DIR="$HOME/bin"
+INSTALL_PATH="$SYSTEM_INSTALL_DIR/chronos"
+USE_SUDO="false"
+
+# Determine the installation path
+if command -v sudo >/dev/null 2>&1; then
+    USE_SUDO="true"
+fi
 
 # Download the latest PHAR file
 echo "Downloading $PHAR_NAME..."
@@ -15,20 +22,38 @@ curl -L -o $PHAR_NAME "https://github.com/$REPO/releases/latest/download/$PHAR_N
 echo "Downloading checksum file..."
 curl -L -o $CHECKSUM_FILE "https://github.com/$REPO/releases/latest/download/$CHECKSUM_FILE"
 
-# Verify the checksum
-echo "Verifying checksum..."
-sha256sum -c $CHECKSUM_FILE --ignore-missing || {
-    echo "Checksum verification failed! The downloaded file may be corrupted."
-    rm -f $PHAR_NAME $CHECKSUM_FILE
-    exit 1
-}
+# Check if sha256sum is available
+if command -v sha256sum >/dev/null 2>&1; then
+    # Verify the checksum
+    echo "Verifying checksum..."
+    if sha256sum -c $CHECKSUM_FILE --ignore-missing; then
+        echo "Checksum verification passed."
+    else
+        echo "Checksum verification failed! The downloaded file may be corrupted."
+        rm -f $PHAR_NAME $CHECKSUM_FILE
+        exit 1
+    fi
+else
+    echo "Warning: sha256sum not found. Skipping checksum verification."
+fi
+
+# Determine the installation path
+if [ "$USE_SUDO" = "true" ]; then
+    INSTALL_PATH="$SYSTEM_INSTALL_DIR/chronos"
+    SUDO_CMD="sudo"
+else
+    INSTALL_PATH="$LOCAL_INSTALL_DIR/chronos"
+    SUDO_CMD=""
+    mkdir -p $LOCAL_INSTALL_DIR
+    echo "No sudo access. Installing to $LOCAL_INSTALL_DIR. Ensure $LOCAL_INSTALL_DIR is in your PATH."
+fi
 
 # Move it to the installation directory
-echo "Installing $PHAR_NAME..."
-mv $PHAR_NAME $INSTALL_PATH
+echo "Installing $PHAR_NAME to $INSTALL_PATH..."
+$SUDO_CMD mv $PHAR_NAME $INSTALL_PATH
 
 # Make it executable
-chmod +x $INSTALL_PATH
+$SUDO_CMD chmod +x $INSTALL_PATH
 
 # Clean up
 rm -f $CHECKSUM_FILE
