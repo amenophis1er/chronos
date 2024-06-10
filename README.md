@@ -145,24 +145,5 @@ We welcome contributions! Please follow these steps to contribute:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
 
-### Key Updates
 
-1. **Automated Installation**:
-   - Added a section for automated installation using `curl` and `sh`.
-
-2. **Manual Installation**:
-   - Retained the existing steps for users who prefer to clone the repository and set up manually.
-
-3. **Usage**:
-   - The command examples and options remain unchanged.
-
-4. **Development**:
-   - Included instructions for creating the PHAR file.
-
-### Next Steps
-
-1. **Testing**: Ensure the automated installation works by running the provided `curl` command.
-2. **Documentation**: Confirm that all links and file paths are correct and accessible in your repository.
-3. **Releases**: Regularly update the GitHub releases with the latest PHAR and checksum files.
