@@ -1,8 +1,3 @@
-Here's an updated `README.md` for **Chronos** that includes the new installation script and instructions for users to install and verify the application using the provided script.
-
-### Updated `README.md`
-
-```markdown
 # Chronos
 
 Chronos is a versatile CLI utility designed to manage and update your project files based on specified JSON instructions. It also includes a command to generate a comprehensive dump of your directory structure and file contents. Chronos aims to streamline project management and provide detailed context for large language models or other purposes.
@@ -20,7 +15,7 @@ Chronos is a versatile CLI utility designed to manage and update your project fi
 You can install Chronos using a single command that handles the download and setup:
 
 ```bash
-curl -sSL https://github.com/amenophis/chronos/releases/latest/download/install.sh | sh
+curl -sSL https://github.com/amenophis1er/chronos/releases/latest/download/install.sh | sh
 ```
 
 ### Manual Installation
@@ -170,6 +165,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 1. **Testing**: Ensure the automated installation works by running the provided `curl` command.
 2. **Documentation**: Confirm that all links and file paths are correct and accessible in your repository.
-3. **Releases**: Regularly update the GitHub releases with the latest PHAR and checksum files. 
-
-By integrating these updates, you'll make the installation process for Chronos more straightforward and user-friendly. If you have further adjustments or specific requirements, feel free to let me know!
+3. **Releases**: Regularly update the GitHub releases with the latest PHAR and checksum files.

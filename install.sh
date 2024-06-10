@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-REPO="amenophis1er/chronos"
+REPO="amenophis/chronos"
 PHAR_NAME="chronos.phar"
 CHECKSUM_FILE="SHA256SUMS"
 INSTALL_DIR="/usr/local/bin"
@@ -17,7 +17,7 @@ curl -L -o $CHECKSUM_FILE "https://github.com/$REPO/releases/latest/download/$CH
 
 # Verify the checksum
 echo "Verifying checksum..."
-grep "$PHAR_NAME" $CHECKSUM_FILE | sha256sum -c - || {
+sha256sum -c $CHECKSUM_FILE --ignore-missing || {
     echo "Checksum verification failed! The downloaded file may be corrupted."
     rm -f $PHAR_NAME $CHECKSUM_FILE
     exit 1
