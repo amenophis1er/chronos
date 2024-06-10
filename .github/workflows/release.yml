@@ -26,6 +26,7 @@ jobs:
 
       - name: Build PHAR
         run: |
+          mkdir -p dist
           php -d phar.readonly=0 build/build-phar.php
 
       - name: Include VERSION in PHAR
@@ -39,15 +40,14 @@ jobs:
           cd dist
           sha256sum chronos.phar > SHA256SUMS
 
+      - name: Copy `install.sh` script
+        run: cp install.sh dist/install.sh
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: release-assets
-          path: dist
-
-      - name: Upload `install.sh` script
-        run: |
-          cp install.sh dist/install.sh
+          path: dist/
 
   release:
     needs: build
@@ -93,14 +93,14 @@ jobs:
       - name: Upload PHAR to Release
         if: env.release_exists == 'false'
         run: |
-          gh release upload ${{ github.ref_name }} dist/chronos.phar --clobber
+          gh release upload ${{ github.ref_name }} chronos.phar --clobber
 
       - name: Upload Checksum to Release
         if: env.release_exists == 'false'
         run: |
-          gh release upload ${{ github.ref_name }} dist/SHA256SUMS --clobber
+          gh release upload ${{ github.ref_name }} SHA256SUMS --clobber
 
       - name: Upload Install Script to Release
         if: env.release_exists == 'false'
         run: |
-          gh release upload ${{ github.ref_name }} dist/install.sh --clobber
+          gh release upload ${{ github.ref_name }} install.sh --clobber
