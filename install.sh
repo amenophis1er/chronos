@@ -1,17 +1,35 @@
 #!/bin/sh
 set -e
 
-REPO="amenophis/chronos"
+REPO="amenophis1er/chronos"
 PHAR_NAME="chronos.phar"
 CHECKSUM_FILE="SHA256SUMS"
 SYSTEM_INSTALL_DIR="/usr/local/bin"
 LOCAL_INSTALL_DIR="$HOME/bin"
-INSTALL_PATH="$SYSTEM_INSTALL_DIR/chronos"
 USE_SUDO="false"
 
-# Determine the installation path
+# Check if PHP is available
+if ! command -v php >/dev/null 2>&1; then
+    echo "Error: PHP is not installed. Please install PHP to use chronos."
+    exit 1
+fi
+
+# Determine if sudo is available
 if command -v sudo >/dev/null 2>&1; then
     USE_SUDO="true"
+fi
+
+# Determine the installation path
+if [ "$USE_SUDO" = "true" ]; then
+    INSTALL_PATH="$SYSTEM_INSTALL_DIR/chronos.phar"
+    WRAPPER_PATH="$SYSTEM_INSTALL_DIR/chronos"
+    SUDO_CMD="sudo"
+else
+    INSTALL_PATH="$LOCAL_INSTALL_DIR/chronos.phar"
+    WRAPPER_PATH="$LOCAL_INSTALL_DIR/chronos"
+    SUDO_CMD=""
+    mkdir -p $LOCAL_INSTALL_DIR
+    echo "No sudo access. Installing to $LOCAL_INSTALL_DIR. Ensure $LOCAL_INSTALL_DIR is in your PATH."
 fi
 
 # Download the latest PHAR file
@@ -35,19 +53,6 @@ if command -v sha256sum >/dev/null 2>&1; then
     fi
 else
     echo "Warning: sha256sum not found. Skipping checksum verification."
-fi
-
-# Determine the installation path
-if [ "$USE_SUDO" = "true" ]; then
-    INSTALL_PATH="$SYSTEM_INSTALL_DIR/chronos"
-    WRAPPER_PATH="$SYSTEM_INSTALL_DIR/chronos"
-    SUDO_CMD="sudo"
-else
-    INSTALL_PATH="$LOCAL_INSTALL_DIR/chronos.phar"
-    WRAPPER_PATH="$LOCAL_INSTALL_DIR/chronos"
-    SUDO_CMD=""
-    mkdir -p $LOCAL_INSTALL_DIR
-    echo "No sudo access. Installing to $LOCAL_INSTALL_DIR. Ensure $LOCAL_INSTALL_DIR is in your PATH."
 fi
 
 # Move the PHAR file to the installation directory
