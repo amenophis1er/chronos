@@ -40,22 +40,26 @@ fi
 # Determine the installation path
 if [ "$USE_SUDO" = "true" ]; then
     INSTALL_PATH="$SYSTEM_INSTALL_DIR/chronos"
+    WRAPPER_PATH="$SYSTEM_INSTALL_DIR/chronos"
     SUDO_CMD="sudo"
 else
-    INSTALL_PATH="$LOCAL_INSTALL_DIR/chronos"
+    INSTALL_PATH="$LOCAL_INSTALL_DIR/chronos.phar"
+    WRAPPER_PATH="$LOCAL_INSTALL_DIR/chronos"
     SUDO_CMD=""
     mkdir -p $LOCAL_INSTALL_DIR
     echo "No sudo access. Installing to $LOCAL_INSTALL_DIR. Ensure $LOCAL_INSTALL_DIR is in your PATH."
 fi
 
-# Move it to the installation directory
+# Move the PHAR file to the installation directory
 echo "Installing $PHAR_NAME to $INSTALL_PATH..."
 $SUDO_CMD mv $PHAR_NAME $INSTALL_PATH
 
-# Make it executable
-$SUDO_CMD chmod +x $INSTALL_PATH
+# Create a wrapper script
+echo "Creating wrapper script at $WRAPPER_PATH..."
+echo "#!/bin/sh\nphp \"$INSTALL_PATH\" \"\$@\"" | $SUDO_CMD tee $WRAPPER_PATH > /dev/null
+$SUDO_CMD chmod +x $WRAPPER_PATH
 
 # Clean up
 rm -f $CHECKSUM_FILE
 
-echo "chronos installed successfully at $INSTALL_PATH"
+echo "chronos installed successfully at $WRAPPER_PATH"
