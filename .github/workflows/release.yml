@@ -34,11 +34,16 @@ jobs:
           $phar = new Phar("dist/chronos.phar");
           $phar->addFile("VERSION", "VERSION");'
 
-      - name: Upload PHAR artifact
+      - name: Generate checksum
+        run: |
+          cd dist
+          sha256sum chronos.phar > SHA256SUMS
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: chronos.phar
-          path: dist/chronos.phar
+          name: release-assets
+          path: dist
 
   release:
     needs: build
@@ -47,10 +52,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Download PHAR artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: chronos.phar
+          name: release-assets
           path: ./
 
       - name: Install GitHub CLI
@@ -81,7 +86,12 @@ jobs:
         run: |
           gh release create ${{ github.ref_name }} --title "Release ${{ github.ref_name }}" --notes "Release notes for ${{ github.ref_name }}"
 
-      - name: Upload Release Asset
+      - name: Upload PHAR to Release
         if: env.release_exists == 'false'
         run: |
           gh release upload ${{ github.ref_name }} chronos.phar --clobber
+
+      - name: Upload Checksum to Release
+        if: env.release_exists == 'false'
+        run: |
+          gh release upload ${{ github.ref_name }} SHA256SUMS --clobber

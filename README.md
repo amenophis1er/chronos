@@ -1,3 +1,8 @@
+Here's an updated `README.md` for **Chronos** that includes the new installation script and instructions for users to install and verify the application using the provided script.
+
+### Updated `README.md`
+
+```markdown
 # Chronos
 
 Chronos is a versatile CLI utility designed to manage and update your project files based on specified JSON instructions. It also includes a command to generate a comprehensive dump of your directory structure and file contents. Chronos aims to streamline project management and provide detailed context for large language models or other purposes.
@@ -10,7 +15,17 @@ Chronos is a versatile CLI utility designed to manage and update your project fi
 
 ## Installation
 
-To get started with Chronos:
+### Automated Installation
+
+You can install Chronos using a single command that handles the download and setup:
+
+```bash
+curl -sSL https://github.com/amenophis/chronos/releases/latest/download/install.sh | sh
+```
+
+### Manual Installation
+
+Alternatively, you can clone the repository and install dependencies manually:
 
 1. **Clone the Repository**:
     ```bash
@@ -112,7 +127,11 @@ Patterns specified using the `--exclude` option can include:
 - **Paths**: relative paths within the project
 
 ## Development
-Create a phar:
+
+### Create a PHAR
+
+To build the PHAR file manually:
+
 ```php
 php -d phar.readonly=0 build/build-phar.php
 ```
@@ -131,4 +150,26 @@ We welcome contributions! Please follow these steps to contribute:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```
 
+### Key Updates
+
+1. **Automated Installation**:
+   - Added a section for automated installation using `curl` and `sh`.
+
+2. **Manual Installation**:
+   - Retained the existing steps for users who prefer to clone the repository and set up manually.
+
+3. **Usage**:
+   - The command examples and options remain unchanged.
+
+4. **Development**:
+   - Included instructions for creating the PHAR file.
+
+### Next Steps
+
+1. **Testing**: Ensure the automated installation works by running the provided `curl` command.
+2. **Documentation**: Confirm that all links and file paths are correct and accessible in your repository.
+3. **Releases**: Regularly update the GitHub releases with the latest PHAR and checksum files. 
+
+By integrating these updates, you'll make the installation process for Chronos more straightforward and user-friendly. If you have further adjustments or specific requirements, feel free to let me know!
