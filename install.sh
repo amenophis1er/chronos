@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-REPO="amenophis/chronos"
+REPO="amenophis1er/chronos"
 PHAR_NAME="chronos.phar"
 CHECKSUM_FILE="SHA256SUMS"
 INSTALL_DIR="/usr/local/bin"
