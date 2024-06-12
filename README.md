@@ -24,7 +24,7 @@ Alternatively, you can clone the repository and install dependencies manually:
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/yourusername/chronos.git
+    git clone https://github.com/amenophis1er/chronos.git
     cd chronos
     ```
 
