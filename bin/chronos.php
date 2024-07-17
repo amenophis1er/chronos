@@ -3,6 +3,7 @@
 // bin/chronos.php
 
 use Amenophis\Chronos\commands\GitCommand;
+use Amenophis\Chronos\commands\GitDiffCommand;
 use Amenophis\Chronos\commands\GptDumpCommand;
 use Amenophis\Chronos\commands\GptUpdateCodeCommand;
 use Amenophis\Chronos\VersionChecker;
@@ -86,4 +87,5 @@ function registerCommands(Application $application)
     $application->add(new GptUpdateCodeCommand());
     $application->add(new GptDumpCommand());
     $application->add(new GitCommand());
+    $application->add(new GitDiffCommand());
 }
