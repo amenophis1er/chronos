@@ -14,20 +14,20 @@ class OpenAIProvider
         $this->model = $config['model'];
     }
 
-    public function generateCommitMessage(string $diff, array $categorizedChanges): string
+    public function generateCommitMessage(string $diff, array $changes): string
     {
         $url = $this->baseUrl . 'chat/completions';
 
-        $changesSummary = $this->formatChangesSummary($categorizedChanges);
+        $changesSummary = $this->formatChangesSummary($changes);
 
         $data = [
             'model' => $this->model,
             'messages' => [
-                ['role' => 'system', 'content' => 'You are a helpful assistant that generates detailed and descriptive Git commit messages based on the provided diff and summary of changes.'],
-                ['role' => 'user', 'content' => "Generate a detailed and descriptive commit message for the following changes:\n\nSummary of changes:\n$changesSummary\nFull diff:\n$diff"],
+                ['role' => 'system', 'content' => 'You are a helpful assistant that generates Git commit messages. The message should have a concise first line (50-72 characters) summarizing the change, followed by a blank line and a more detailed explanation. Use plain text format without markdown.'],
+                ['role' => 'user', 'content' => "Generate a commit message for the following changes:\n\nSummary of changes:\n$changesSummary\nFull diff:\n$diff"],
             ],
             'temperature' => 0.7,
-            'max_tokens' => 500,
+            'max_tokens' => 350,
         ];
 
         $ch = \curl_init($url);
@@ -64,11 +64,22 @@ class OpenAIProvider
         return $result['choices'][0]['message']['content'];
     }
 
-    private function formatChangesSummary(array $changes): string
+    private function formatChangesSummary($changes): string
     {
+        if (is_string($changes)) {
+            return $changes; // Return as-is if it's already a string
+        }
+
         $summary = '';
-        foreach ($changes as $change) {
-            $summary .= "- $change\n";
+        foreach ($changes as $type => $files) {
+            if (is_array($files) && !empty($files)) {
+                $summary .= "$type:\n";
+                foreach ($files as $file) {
+                    $summary .= "  - $file\n";
+                }
+            } elseif (is_string($files)) {
+                $summary .= "$type: $files\n";
+            }
         }
         return $summary;
     }
