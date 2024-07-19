@@ -118,7 +118,8 @@ class GitCommitCommand extends BaseCommand
     private function displayChangeSummary(OutputInterface $output)
     {
         $output->writeln('<info>Changes to be committed:</info>');
-        passthru('git status --short');
+        exec('git status --short', $statusOutput);
+        $output->writeln(implode("\n", $statusOutput));
         $output->writeln('');
     }
 
@@ -132,16 +133,25 @@ class GitCommitCommand extends BaseCommand
 
     private function createCommit(InputInterface $input, OutputInterface $output, string $commitMessage): int
     {
+        // Stage all changes
+        exec('git add -A', $addOutput, $addReturnVar);
+        if ($addReturnVar !== 0) {
+            $output->writeln('<error>Failed to stage changes.</error>');
+            return Command::FAILURE;
+        }
+
         $noVerify = $input->getOption('no-verify') ? '--no-verify' : '';
         $command = sprintf('git commit -m %s %s', escapeshellarg($commitMessage), $noVerify);
 
-        passthru($command, $returnVar);
+        exec($command, $commitOutput, $commitReturnVar);
 
-        if ($returnVar === 0) {
-            $output->writeln('<info>Commit created successfully.</info>');
+        if ($commitReturnVar === 0) {
+            $output->writeln('<info>Commit created successfully:</info>');
+            $output->writeln(implode("\n", $commitOutput));
             return Command::SUCCESS;
         } else {
-            $output->writeln('<error>Failed to create commit.</error>');
+            $output->writeln('<error>Failed to create commit:</error>');
+            $output->writeln(implode("\n", $commitOutput));
             return Command::FAILURE;
         }
     }
